@@ -1,0 +1,6 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/Users/hannahpfersch/Documents/College/Senior/SP24/CSC109/Challenge2/**/*.jar"
+    ]
+}
