@@ -44,7 +44,6 @@ public class App extends JFrame{
     }
 
     public void start() {
-        //Username and access token panel
         getLogin();
         run();
     }
@@ -70,6 +69,8 @@ public class App extends JFrame{
             }
         });
 
+        repaint();
+
         while (isRunning) {
 
             //Check completion of repo initialization
@@ -94,12 +95,12 @@ public class App extends JFrame{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
-        
+        } 
     }
 
     //Get username and access token
     private void getLogin() {
+        //Username and access token panel
         JPanel loginPanel = new JPanel();
         JTextField userTF = new JTextField();
         JTextField tokenTF = new JTextField();
@@ -134,11 +135,11 @@ public class App extends JFrame{
             }
         });
 
-        mainPanel.add(loginPanel);
+        this.add(loginPanel);
+        repaint();
 
         //Wait to load main panel until login obtained
         while (username == null || token == null) {
-            System.out.println("yep");
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
