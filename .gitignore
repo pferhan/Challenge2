@@ -9,6 +9,7 @@
 *.nar
 hs_err_pid*
 replay_pid*
+*.vscode
 
 ##############################
 ## Maven
@@ -76,7 +77,7 @@ nb-configuration.xml
 ##############################
 ## Visual Studio Code
 ##############################
-.vscode/
+.vscode
 .code-workspace
 
 ##############################
