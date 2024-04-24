@@ -192,11 +192,11 @@ public class App extends JFrame{
         JLabel tokenLabel = new JLabel("Access Token:", SwingConstants.RIGHT);
         JButton button = new JButton("Enter");
 
-
         JLabel disclamerLabel = new JLabel("DISCLAIMER: this application is a prototype and not yet meant for commercial use");
         disclamerLabel.setFont(new Font("Verdana", Font.PLAIN, 9));
         disclamerLabel.setBounds(60, 120,400, 20);
         loginPanel.add(disclamerLabel);
+
 
 
         loginPanel.setBackground(java.awt.Color.gray);
