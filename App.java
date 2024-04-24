@@ -1,3 +1,4 @@
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -7,8 +8,11 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import git.tools.client.GitSubprocessClient;
 import github.tools.client.GitHubApiClient;
@@ -17,7 +21,7 @@ import github.tools.responseObjects.*;
 
 public class App extends JFrame{
     
-
+    private Image logo;
     private JPanel mainPanel;
     private String username, token, repoPath, name, description;
     private Boolean isRunning, initComplete, isPrivate;
@@ -25,12 +29,20 @@ public class App extends JFrame{
     GitSubprocessClient gitSubprocessClient;
 
     public App() {
-        mainPanel = new JPanel();
+        mainPanel = new MainPanel();
         isRunning = false;
         initComplete = false;
 
         mainPanel.setLayout(null);
         mainPanel.setBackground(java.awt.Color.pink);
+
+        //Load logo image
+        try {
+            logo = ImageIO.read(getClass().getResource("SmallerLogo.png"));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(new Dimension(800, 600));
@@ -71,8 +83,6 @@ public class App extends JFrame{
                 System.out.println(repoPath);
             }
         });
-
-        repaint();
 
         while (isRunning) {
 
@@ -135,6 +145,14 @@ public class App extends JFrame{
             createButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    //Git add all
+                    String gitAddAll = gitSubprocessClient.gitAddAll();
+                    System.out.println(gitAddAll);
+
+                    //Git commit
+                    String commit = gitSubprocessClient.gitCommit("Initial Commit");
+                    System.out.println(commit);
+
                     name = nameTF.getText();
                     description = descriptionTF.getText();
                     
@@ -144,8 +162,14 @@ public class App extends JFrame{
                     requestParams.addParam("private", isPrivate);       // if repo is private or not
 
                     CreateRepoResponse createRepo = gitHubApiClient.createRepo(requestParams);
+
+                    //create link to new repo
                     String repoLink = "https://github.com/" + username + "/" + name;
                     String gitRemoteAdd = gitSubprocessClient.gitRemoteAdd("origin", repoLink); 
+
+                    //Git push
+                    String push = gitSubprocessClient.gitPush("master");
+
                 }
             });
 
@@ -161,9 +185,9 @@ public class App extends JFrame{
         } 
     }
 
-        //Get username and access token
-        private void getLogin() {
-          //Username and access token panel
+    //Get username and access token
+    private void getLogin() {
+        //Username and access token panel
         JPanel loginPanel = new JPanel();
         JTextField userTF = new JTextField();
         JTextField tokenTF = new JTextField();
@@ -190,9 +214,9 @@ public class App extends JFrame{
                 username = userTF.getText();
                 token = tokenTF.getText();
                 gitHubApiClient = new GitHubApiClient(username, token);
-               //TODO: Error checking?
+            //TODO: Error checking?
 
-               loginPanel.setVisible(false);
+            loginPanel.setVisible(false);
             }
         });
 
@@ -207,5 +231,20 @@ public class App extends JFrame{
                 e.printStackTrace();
             }
         }
+    }
+
+    private class MainPanel extends JPanel {
+    
+        public MainPanel() {
+
+        }
+
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            g.drawImage(logo, 0, 0, null);
+        }
+        
     }
 }
