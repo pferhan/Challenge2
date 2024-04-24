@@ -1,3 +1,4 @@
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -7,8 +8,11 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import git.tools.client.GitSubprocessClient;
 import github.tools.client.GitHubApiClient;
@@ -17,7 +21,7 @@ import github.tools.responseObjects.*;
 
 public class App extends JFrame{
     
-
+    private Image logo;
     private JPanel mainPanel;
     private String username, token, repoPath, name, description;
     private Boolean isRunning, initComplete, isPrivate;
@@ -25,12 +29,20 @@ public class App extends JFrame{
     GitSubprocessClient gitSubprocessClient;
 
     public App() {
-        mainPanel = new JPanel();
+        mainPanel = new MainPanel();
         isRunning = false;
         initComplete = false;
 
         mainPanel.setLayout(null);
         mainPanel.setBackground(java.awt.Color.pink);
+
+        //Load logo image
+        try {
+            logo = ImageIO.read(getClass().getResource("SmallerLogo.png"));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(new Dimension(800, 600));
@@ -165,51 +177,66 @@ public class App extends JFrame{
         } 
     }
 
-        //Get username and access token
-        private void getLogin() {
-            //Username and access token panel
-            JPanel loginPanel = new JPanel();
-            JTextField userTF = new JTextField();
-            JTextField tokenTF = new JTextField();
-            JLabel userLabel = new JLabel("Username:", SwingConstants.RIGHT);
-            JLabel tokenLabel = new JLabel("Access Token:", SwingConstants.RIGHT);
-            JButton button = new JButton("Enter");
-            loginPanel.setBackground(java.awt.Color.gray);
-            loginPanel.setSize(300, 140);
-            loginPanel.setLayout(null);
-            loginPanel.setLocation(250, 160);
-            loginPanel.add(userLabel);
-            userLabel.setBounds(10, 20, 90, 20);
-            loginPanel.add(userTF);
-            userTF.setBounds(110, 20, 180, 20);
-            loginPanel.add(tokenLabel);
-            tokenLabel.setBounds(10, 60, 90, 20);
-            loginPanel.add(tokenTF);
-            tokenTF.setBounds(110, 60, 180, 20);
-            loginPanel.add(button);
-            button.setBounds(100, 100, 100, 30);
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    username = userTF.getText();
-                    token = tokenTF.getText();
-                    gitHubApiClient = new GitHubApiClient(username, token);
-                //TODO: Error checking?
+    //Get username and access token
+    private void getLogin() {
+        //Username and access token panel
+        JPanel loginPanel = new JPanel();
+        JTextField userTF = new JTextField();
+        JTextField tokenTF = new JTextField();
+        JLabel userLabel = new JLabel("Username:", SwingConstants.RIGHT);
+        JLabel tokenLabel = new JLabel("Access Token:", SwingConstants.RIGHT);
+        JButton button = new JButton("Enter");
+        loginPanel.setBackground(java.awt.Color.gray);
+        loginPanel.setSize(300, 140);
+        loginPanel.setLayout(null);
+        loginPanel.setLocation(250, 160);
+        loginPanel.add(userLabel);
+        userLabel.setBounds(10, 20, 90, 20);
+        loginPanel.add(userTF);
+        userTF.setBounds(110, 20, 180, 20);
+        loginPanel.add(tokenLabel);
+        tokenLabel.setBounds(10, 60, 90, 20);
+        loginPanel.add(tokenTF);
+        tokenTF.setBounds(110, 60, 180, 20);
+        loginPanel.add(button);
+        button.setBounds(100, 100, 100, 30);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                username = userTF.getText();
+                token = tokenTF.getText();
+                gitHubApiClient = new GitHubApiClient(username, token);
+            //TODO: Error checking?
 
-                loginPanel.setVisible(false);
-                }
-            });
-
-            this.add(loginPanel);
-            repaint();
-
-            //Wait to load main panel until login obtained
-            while (username == null || token == null) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            loginPanel.setVisible(false);
             }
+        });
+
+        this.add(loginPanel);
+        repaint();
+
+        //Wait to load main panel until login obtained
+        while (username == null || token == null) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class MainPanel extends JPanel {
+    
+        public MainPanel() {
+
+        }
+
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            g.drawImage(logo, 0, 0, null);
+        }
+        
     }
 }
