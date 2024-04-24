@@ -72,8 +72,6 @@ public class App extends JFrame{
             }
         });
 
-        repaint();
-
         while (isRunning) {
 
             //Check completion of repo initialization
@@ -135,6 +133,13 @@ public class App extends JFrame{
             createButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    //Git add all
+                    String gitAddAll = gitSubprocessClient.gitAddAll();
+                    System.out.println(gitAddAll);
+
+                    //Git commit
+                    String commit = gitSubprocessClient.gitCommit("Initial Commit");
+
                     name = nameTF.getText();
                     description = descriptionTF.getText();
                     
@@ -162,49 +167,49 @@ public class App extends JFrame{
 
         //Get username and access token
         private void getLogin() {
-          //Username and access token panel
-        JPanel loginPanel = new JPanel();
-        JTextField userTF = new JTextField();
-        JTextField tokenTF = new JTextField();
-        JLabel userLabel = new JLabel("Username:", SwingConstants.RIGHT);
-        JLabel tokenLabel = new JLabel("Access Token:", SwingConstants.RIGHT);
-        JButton button = new JButton("Enter");
-        loginPanel.setBackground(java.awt.Color.gray);
-        loginPanel.setSize(300, 140);
-        loginPanel.setLayout(null);
-        loginPanel.setLocation(250, 160);
-        loginPanel.add(userLabel);
-        userLabel.setBounds(10, 20, 90, 20);
-        loginPanel.add(userTF);
-        userTF.setBounds(110, 20, 180, 20);
-        loginPanel.add(tokenLabel);
-        tokenLabel.setBounds(10, 60, 90, 20);
-        loginPanel.add(tokenTF);
-        tokenTF.setBounds(110, 60, 180, 20);
-        loginPanel.add(button);
-        button.setBounds(100, 100, 100, 30);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                username = userTF.getText();
-                token = tokenTF.getText();
-                gitHubApiClient = new GitHubApiClient(username, token);
-               //TODO: Error checking?
+            //Username and access token panel
+            JPanel loginPanel = new JPanel();
+            JTextField userTF = new JTextField();
+            JTextField tokenTF = new JTextField();
+            JLabel userLabel = new JLabel("Username:", SwingConstants.RIGHT);
+            JLabel tokenLabel = new JLabel("Access Token:", SwingConstants.RIGHT);
+            JButton button = new JButton("Enter");
+            loginPanel.setBackground(java.awt.Color.gray);
+            loginPanel.setSize(300, 140);
+            loginPanel.setLayout(null);
+            loginPanel.setLocation(250, 160);
+            loginPanel.add(userLabel);
+            userLabel.setBounds(10, 20, 90, 20);
+            loginPanel.add(userTF);
+            userTF.setBounds(110, 20, 180, 20);
+            loginPanel.add(tokenLabel);
+            tokenLabel.setBounds(10, 60, 90, 20);
+            loginPanel.add(tokenTF);
+            tokenTF.setBounds(110, 60, 180, 20);
+            loginPanel.add(button);
+            button.setBounds(100, 100, 100, 30);
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    username = userTF.getText();
+                    token = tokenTF.getText();
+                    gitHubApiClient = new GitHubApiClient(username, token);
+                //TODO: Error checking?
 
-               loginPanel.setVisible(false);
+                loginPanel.setVisible(false);
+                }
+            });
+
+            this.add(loginPanel);
+            repaint();
+
+            //Wait to load main panel until login obtained
+            while (username == null || token == null) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        });
-
-        this.add(loginPanel);
-        repaint();
-
-        //Wait to load main panel until login obtained
-        while (username == null || token == null) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
