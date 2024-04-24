@@ -6,6 +6,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -108,21 +109,26 @@ public class App extends JFrame{
         JLabel tokenLabel = new JLabel("Access Token:", SwingConstants.RIGHT);
         JButton button = new JButton("Enter");
 
+        JLabel disclamerLabel = new JLabel("DISCLAIMER: this application is a prototype and not yet meant for commercial use");
+        disclamerLabel.setFont(new Font("Verdana", Font.PLAIN, 9));
+        disclamerLabel.setBounds(60, 120,400, 20);
+        loginPanel.add(disclamerLabel);
+
         loginPanel.setBackground(java.awt.Color.gray);
-        loginPanel.setSize(300, 140);
+        loginPanel.setSize(500, 140);
         loginPanel.setLayout(null);
-        loginPanel.setLocation(250, 160);
+        loginPanel.setLocation(150, 160);
 
         loginPanel.add(userLabel);
-        userLabel.setBounds(10, 20, 90, 20);
+        userLabel.setBounds(50, 20, 90, 20);
         loginPanel.add(userTF);
-        userTF.setBounds(110, 20, 180, 20);
+        userTF.setBounds(160, 20, 180, 20);
         loginPanel.add(tokenLabel);
-        tokenLabel.setBounds(10, 60, 90, 20);
+        tokenLabel.setBounds(50, 60, 90, 20);
         loginPanel.add(tokenTF);
-        tokenTF.setBounds(110, 60, 180, 20);
+        tokenTF.setBounds(160, 60, 180, 20);
         loginPanel.add(button);
-        button.setBounds(100, 100, 100, 30);
+        button.setBounds(200, 100, 100, 30);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
