@@ -195,14 +195,18 @@ public class App extends JFrame{
         JLabel userLabel = new JLabel("Username:", SwingConstants.RIGHT);
         JLabel tokenLabel = new JLabel("Access Token:", SwingConstants.RIGHT);
         JButton button = new JButton("Enter");
+
         JLabel disclamerLabel = new JLabel("DISCLAIMER: this application is a prototype and not yet meant for commercial use");
         disclamerLabel.setFont(new Font("Verdana", Font.PLAIN, 9));
         disclamerLabel.setBounds(60, 120,400, 20);
         loginPanel.add(disclamerLabel);
+
+
+
         loginPanel.setBackground(java.awt.Color.gray);
         loginPanel.setSize(500, 140);
         loginPanel.setLayout(null);
-        loginPanel.setLocation(250, 160);
+        loginPanel.setLocation(150, 160);
         loginPanel.add(userLabel);
         userLabel.setBounds(50, 20, 90, 20);
         loginPanel.add(userTF);
