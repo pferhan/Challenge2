@@ -9,7 +9,6 @@ import javax.swing.SwingConstants;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Scanner;
 
 import git.tools.client.GitSubprocessClient;
 import github.tools.client.GitHubApiClient;
@@ -19,45 +18,160 @@ import github.tools.responseObjects.*;
 public class App extends JFrame{
 
     private JPanel mainPanel;
-    String username, token;
-    private GitHubApiClient gitHubApiClient;
+    private String username, token, repoPath, name, description;
+    private Boolean isRunning, initComplete, isPrivate;
+    GitHubApiClient gitHubApiClient;
+    GitSubprocessClient gitSubprocessClient;
 
     public App() {
         mainPanel = new JPanel();
+        isRunning = false;
+        initComplete = false;
+
         mainPanel.setLayout(null);
+        mainPanel.setBackground(java.awt.Color.pink);
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(new Dimension(800, 600));
         this.setContentPane(mainPanel);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-
-        getLogin();
-        createRepo();
-
-        //TODO: Everything
-
         this.setVisible(true);
+
+        start();
     }
 
     public static void main (String[] args) {
         new App();
     }
 
-    //Get username and access token
-    private void getLogin() {
+    public void start() {
+        getLogin();
+        run();
+    }
+
+    public void run() {
+        isRunning = true;
+
+        //File path request
+        JLabel pathLabel = new JLabel("Repository File Path:", SwingConstants.RIGHT);
+        JTextField pathTF = new JTextField();
+        pathLabel.setBounds(50, 100, 160, 30);
+        pathTF.setBounds(230, 100, 420, 30);
+        mainPanel.add(pathLabel);
+        mainPanel.add(pathTF);
+        JButton pathButton = new JButton("OK");
+        pathButton.setBounds(670, 100, 60, 30);
+        mainPanel.add(pathButton);
+        pathButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                repoPath = pathTF.getText();
+                System.out.println(repoPath);
+            }
+        });
+
+        repaint();
+
+        while (isRunning) {
+
+            //Check completion of repo initialization
+            if (!initComplete) {
+
+                //Check if repo path entered by user
+                if (repoPath != null) {
+
+                    //Turn local project into github repo
+                    gitSubprocessClient = new GitSubprocessClient(repoPath);
+                    String gitInit = gitSubprocessClient.gitInit();
+
+                    //Initialization of repo complete. Print to terminal
+                    initComplete = true;
+                    System.out.println(gitInit);
+                }
+            }
+
+
+            //request, name, description, and privacy
+            JLabel nameLabel = new JLabel("Repository Name:", SwingConstants.RIGHT);
+            JTextField nameTF = new JTextField();
+            nameLabel.setBounds(50, 200, 160, 30);
+            nameTF.setBounds(230, 200, 420, 30);
+            mainPanel.add(nameLabel);
+            mainPanel.add(nameTF);
+
+            JLabel descriptionLabel = new JLabel("Repository Description:", SwingConstants.RIGHT);
+            JTextField descriptionTF = new JTextField();
+            descriptionLabel.setBounds(50, 300, 160, 30);
+            descriptionTF.setBounds(230, 300, 420, 30);
+            mainPanel.add(descriptionLabel);
+            mainPanel.add(descriptionTF);
+
+           
+            JToggleButton privacyButton = new JToggleButton("Click here");
+            JLabel privacyLabel = new JLabel("Click to select Public or Private:", SwingConstants.RIGHT);
+            privacyButton.setBounds(330, 400, 200, 30);
+            privacyLabel.setBounds(50, 400, 260, 30);
+            mainPanel.add(privacyButton);
+            mainPanel.add(privacyLabel);
+             privacyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (privacyButton.isSelected()) {
+                    privacyButton.setText("Public");
+                    isPrivate = false;
+                } else {
+                    privacyButton.setText("Private");
+                    isPrivate = true;
+                }
+            }
+        });
+            
+            
+            JButton createButton = new JButton("create");
+            createButton.setBounds(370, 500, 100, 30);
+            mainPanel.add(createButton);
+            createButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    name = nameTF.getText();
+                    description = descriptionTF.getText();
+                    
+                    RequestParams requestParams = new RequestParams();
+                    requestParams.addParam("name", name);                   // name of repo
+                    requestParams.addParam("description", description); // repo description
+                    requestParams.addParam("private", isPrivate);                    // if repo is private or not
+
+                    CreateRepoResponse createRepo = gitHubApiClient.createRepo(requestParams);
+                    System.out.println("repo created");
+                }
+            });
+
+
+            repaint();
+
+            //Sleep
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } 
+    }
+
+        //Get username and access token
+        private void getLogin() {
+          //Username and access token panel
         JPanel loginPanel = new JPanel();
         JTextField userTF = new JTextField();
         JTextField tokenTF = new JTextField();
         JLabel userLabel = new JLabel("Username:", SwingConstants.RIGHT);
         JLabel tokenLabel = new JLabel("Access Token:", SwingConstants.RIGHT);
         JButton button = new JButton("Enter");
-
         loginPanel.setBackground(java.awt.Color.gray);
         loginPanel.setSize(300, 140);
         loginPanel.setLayout(null);
         loginPanel.setLocation(250, 160);
-
         loginPanel.add(userLabel);
         userLabel.setBounds(10, 20, 90, 20);
         loginPanel.add(userTF);
@@ -68,97 +182,28 @@ public class App extends JFrame{
         tokenTF.setBounds(110, 60, 180, 20);
         loginPanel.add(button);
         button.setBounds(100, 100, 100, 30);
-
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 username = userTF.getText();
                 token = tokenTF.getText();
+                gitHubApiClient = new GitHubApiClient(username, token);
+               //TODO: Error checking?
 
-                //TODO: Error checking?
-
-                mainPanel.setVisible(false);
+               loginPanel.setVisible(false);
             }
         });
 
-        mainPanel.add(loginPanel);
+        this.add(loginPanel);
+        repaint();
+
+        //Wait to load main panel until login obtained
+        while (username == null || token == null) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
-
-    private void createRepo() {
-        //create panel and add text fields
-        JPanel createRepoPanel = new JPanel();
-        JTextField nameTF = new JTextField();
-        JTextField descriptionTF = new JTextField();
-        JTextField repositoryPathTF = new JTextField();
-        JToggleButton privacyToggle = new JToggleButton("Private");
-    
-        //add labels
-        JLabel nameLabel = new JLabel("Repository Name:", SwingConstants.RIGHT);
-        JLabel descriptionLabel = new JLabel("Description:", SwingConstants.RIGHT);
-        JLabel privacyLabel = new JLabel("Privacy:", SwingConstants.RIGHT);
-        JLabel repositoryPathLabel = new JLabel("RepositoryPath:", SwingConstants.RIGHT);
-
-        //toggle button for public and private
-        privacyToggle.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (privacyToggle.isSelected()) {
-                    privacyToggle.setText("Public");
-                } else {
-                    privacyToggle.setText("Private");
-                }
-            }
-        });
-    
-        JButton submitButton = new JButton("Create Repository");
-    
-        //format panel
-        createRepoPanel.setBackground(java.awt.Color.gray);
-        createRepoPanel.setSize(300, 200);
-        createRepoPanel.setLayout(null);
-        createRepoPanel.setLocation(0, 0);
-    
-        //format name label
-        createRepoPanel.add(nameLabel);
-        nameLabel.setBounds(10, 20, 100, 20);
-        createRepoPanel.add(nameTF);
-        nameTF.setBounds(120, 20, 170, 20);
-    
-        //format description label
-        createRepoPanel.add(descriptionLabel);
-        descriptionLabel.setBounds(10, 60, 100, 20);
-        createRepoPanel.add(descriptionTF);
-        descriptionTF.setBounds(120, 60, 170, 20);
-    
-        ////format privacy label
-        createRepoPanel.add(privacyLabel);
-        privacyLabel.setBounds(10, 100, 100, 20);
-        createRepoPanel.add(privacyToggle);
-        privacyToggle.setBounds(120, 100, 100, 20);
-    
-        createRepoPanel.add(submitButton);
-        submitButton.setBounds(75, 140, 150, 30);
-    
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String repoName = nameTF.getText();
-                String repoDescription = descriptionTF.getText();
-                boolean isPrivate = privacyToggle.isSelected();
-                String repoPath = repositoryPathTF.getText();
-    
-                //Use the values to create the repository
-                RequestParams requestParams = new RequestParams();
-                requestParams.addParam("name", repoName);                  
-                requestParams.addParam("description", repoDescription); 
-                requestParams.addParam("private", isPrivate); 
-                
-                CreateRepoResponse createRepo = gitHubApiClient.createRepo(requestParams);
-
-            }
-        });
-    
-        mainPanel.add(createRepoPanel);
-    }
-
 }
