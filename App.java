@@ -151,6 +151,7 @@ public class App extends JFrame{
 
                     //Git commit
                     String commit = gitSubprocessClient.gitCommit("Initial Commit");
+                    System.out.println(commit);
 
                     name = nameTF.getText();
                     description = descriptionTF.getText();
@@ -162,6 +163,9 @@ public class App extends JFrame{
 
                     CreateRepoResponse createRepo = gitHubApiClient.createRepo(requestParams);
                     System.out.println("repo created");
+
+                    //Git push
+                    String push = gitSubprocessClient.gitPush("master");
                 }
             });
 
