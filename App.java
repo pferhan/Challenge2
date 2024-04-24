@@ -115,7 +115,7 @@ public class App extends JFrame{
             privacyLabel.setBounds(50, 400, 260, 30);
             mainPanel.add(privacyButton);
             mainPanel.add(privacyLabel);
-             privacyButton.addActionListener(new ActionListener() {
+            privacyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (privacyButton.isSelected()) {
@@ -139,12 +139,13 @@ public class App extends JFrame{
                     description = descriptionTF.getText();
                     
                     RequestParams requestParams = new RequestParams();
-                    requestParams.addParam("name", name);                   // name of repo
+                    requestParams.addParam("name", name);               // name of repo
                     requestParams.addParam("description", description); // repo description
-                    requestParams.addParam("private", isPrivate);                    // if repo is private or not
+                    requestParams.addParam("private", isPrivate);       // if repo is private or not
 
                     CreateRepoResponse createRepo = gitHubApiClient.createRepo(requestParams);
-                    System.out.println("repo created");
+                    String repoLink = "https://github.com/" + username + "/" + name;
+                    String gitRemoteAdd = gitSubprocessClient.gitRemoteAdd("origin", repoLink); 
                 }
             });
 
