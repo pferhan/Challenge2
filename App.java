@@ -3,6 +3,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
 import java.awt.Dimension;
@@ -11,14 +12,16 @@ import java.awt.event.ActionListener;
 
 import git.tools.client.GitSubprocessClient;
 import github.tools.client.GitHubApiClient;
+import github.tools.client.RequestParams;
 import github.tools.responseObjects.*;
 
 public class App extends JFrame{
+    
 
     private JPanel mainPanel;
-    private String username, token, repoPath;
-    private Boolean isRunning, initComplete;
-
+    private String username, token, repoPath, name, description;
+    private Boolean isRunning, initComplete, isPrivate;
+    GitHubApiClient gitHubApiClient;
     GitSubprocessClient gitSubprocessClient;
 
     public App() {
@@ -89,6 +92,65 @@ public class App extends JFrame{
                 }
             }
 
+
+            //request, name, description, and privacy
+            JLabel nameLabel = new JLabel("Repository Name:", SwingConstants.RIGHT);
+            JTextField nameTF = new JTextField();
+            nameLabel.setBounds(50, 200, 160, 30);
+            nameTF.setBounds(230, 200, 420, 30);
+            mainPanel.add(nameLabel);
+            mainPanel.add(nameTF);
+
+            JLabel descriptionLabel = new JLabel("Repository Description:", SwingConstants.RIGHT);
+            JTextField descriptionTF = new JTextField();
+            descriptionLabel.setBounds(50, 300, 160, 30);
+            descriptionTF.setBounds(230, 300, 420, 30);
+            mainPanel.add(descriptionLabel);
+            mainPanel.add(descriptionTF);
+
+           
+            JToggleButton privacyButton = new JToggleButton("Click here");
+            JLabel privacyLabel = new JLabel("Click to select Public or Private:", SwingConstants.RIGHT);
+            privacyButton.setBounds(330, 400, 200, 30);
+            privacyLabel.setBounds(50, 400, 260, 30);
+            mainPanel.add(privacyButton);
+            mainPanel.add(privacyLabel);
+             privacyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (privacyButton.isSelected()) {
+                    privacyButton.setText("Public");
+                    isPrivate = false;
+                } else {
+                    privacyButton.setText("Private");
+                    isPrivate = true;
+                }
+            }
+        });
+            
+            
+            JButton createButton = new JButton("create");
+            createButton.setBounds(370, 500, 100, 30);
+            mainPanel.add(createButton);
+            createButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    name = nameTF.getText();
+                    description = descriptionTF.getText();
+                    
+                    RequestParams requestParams = new RequestParams();
+                    requestParams.addParam("name", name);                   // name of repo
+                    requestParams.addParam("description", description); // repo description
+                    requestParams.addParam("private", isPrivate);                    // if repo is private or not
+
+                    CreateRepoResponse createRepo = gitHubApiClient.createRepo(requestParams);
+                    System.out.println("repo created");
+                }
+            });
+
+
+            repaint();
+
             //Sleep
             try {
                 Thread.sleep(500);
@@ -98,21 +160,19 @@ public class App extends JFrame{
         } 
     }
 
-    //Get username and access token
-    private void getLogin() {
-        //Username and access token panel
+        //Get username and access token
+        private void getLogin() {
+          //Username and access token panel
         JPanel loginPanel = new JPanel();
         JTextField userTF = new JTextField();
         JTextField tokenTF = new JTextField();
         JLabel userLabel = new JLabel("Username:", SwingConstants.RIGHT);
         JLabel tokenLabel = new JLabel("Access Token:", SwingConstants.RIGHT);
         JButton button = new JButton("Enter");
-
         loginPanel.setBackground(java.awt.Color.gray);
         loginPanel.setSize(300, 140);
         loginPanel.setLayout(null);
         loginPanel.setLocation(250, 160);
-
         loginPanel.add(userLabel);
         userLabel.setBounds(10, 20, 90, 20);
         loginPanel.add(userTF);
@@ -128,10 +188,10 @@ public class App extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 username = userTF.getText();
                 token = tokenTF.getText();
+                gitHubApiClient = new GitHubApiClient(username, token);
+               //TODO: Error checking?
 
-                //TODO: Error checking?
-
-                loginPanel.setVisible(false);
+               loginPanel.setVisible(false);
             }
         });
 
