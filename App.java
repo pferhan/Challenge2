@@ -271,6 +271,7 @@ public class App extends JFrame{
                     } catch (IOException er) {
                          System.err.println("Error writing to file: " + er.getMessage());
                     }
+                    push = gitSubprocessClient.gitPush("master");
 
                 }
             });
