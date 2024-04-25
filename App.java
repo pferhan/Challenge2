@@ -13,6 +13,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import git.tools.client.GitSubprocessClient;
@@ -171,9 +172,111 @@ public class App extends JFrame{
                     //Git push
                     String push = gitSubprocessClient.gitPush("master");
 
+                    //write gitignor file
+                     try {
+                       FileWriter writer = new FileWriter(".gitignore");
+                        writer.write("##############################\n" + //
+                                "## Java\n" + //
+                                "##############################\n" + //
+                                ".mtj.tmp/\n" + //
+                                "*.class\n" + //
+                                "*.jar\n" + //
+                                "*.war\n" + //
+                                "*.ear\n" + //
+                                "*.nar\n" + //
+                                "hs_err_pid*\n" + //
+                                "replay_pid*\n" + //
+                                "*.vscode\n" + //
+                                "\n" + //
+                                "##############################\n" + //
+                                "## Maven\n" + //
+                                "##############################\n" + //
+                                "target/\n" + //
+                                "pom.xml.tag\n" + //
+                                "pom.xml.releaseBackup\n" + //
+                                "pom.xml.versionsBackup\n" + //
+                                "pom.xml.next\n" + //
+                                "pom.xml.bak\n" + //
+                                "release.properties\n" + //
+                                "dependency-reduced-pom.xml\n" + //
+                                "buildNumber.properties\n" + //
+                                ".mvn/timing.properties\n" + //
+                                ".mvn/wrapper/maven-wrapper.jar\n" + //
+                                "\n" + //
+                                "##############################\n" + //
+                                "## Gradle\n" + //
+                                "##############################\n" + //
+                                "bin/\n" + //
+                                "build/\n" + //
+                                ".gradle\n" + //
+                                ".gradletasknamecache\n" + //
+                                "gradle-app.setting\n" + //
+                                "!gradle-wrapper.jar\n" + //
+                                "\n" + //
+                                "##############################\n" + //
+                                "## IntelliJ\n" + //
+                                "##############################\n" + //
+                                "out/\n" + //
+                                ".idea/\n" + //
+                                ".idea_modules/\n" + //
+                                "*.iml\n" + //
+                                "*.ipr\n" + //
+                                "*.iws\n" + //
+                                "\n" + //
+                                "##############################\n" + //
+                                "## Eclipse\n" + //
+                                "##############################\n" + //
+                                ".settings/\n" + //
+                                "bin/\n" + //
+                                "tmp/\n" + //
+                                ".metadata\n" + //
+                                ".classpath\n" + //
+                                ".project\n" + //
+                                "*.tmp\n" + //
+                                "*.bak\n" + //
+                                "*.swp\n" + //
+                                "*~.nib\n" + //
+                                "local.properties\n" + //
+                                ".loadpath\n" + //
+                                ".factorypath\n" + //
+                                "\n" + //
+                                "##############################\n" + //
+                                "## NetBeans\n" + //
+                                "##############################\n" + //
+                                "nbproject/private/\n" + //
+                                "build/\n" + //
+                                "nbbuild/\n" + //
+                                "dist/\n" + //
+                                "nbdist/\n" + //
+                                "nbactions.xml\n" + //
+                                "nb-configuration.xml\n" + //
+                                "\n" + //
+                                "##############################\n" + //
+                                "## Visual Studio Code\n" + //
+                                "##############################\n" + //
+                                ".vscode\n" + //
+                                ".code-workspace\n" + //
+                                "\n" + //
+                                "##############################\n" + //
+                                "## OS X\n" + //
+                                "##############################\n" + //
+                                ".DS_Store\n" + //
+                                "\n" + //
+                                "##############################\n" + //
+                                "## Miscellaneous\n" + //
+                                "##############################\n" + //
+                                "*.log");
+                        writer.close();
+                        System.out.println("File written successfully.");
+                    } catch (IOException er) {
+                         System.err.println("Error writing to file: " + er.getMessage());
+                    }
+                    push = gitSubprocessClient.gitPush("master");
+
                 }
             });
 
+            String gitAddFile = gitSubprocessClient.gitAddFile(".gitignore");
 
             repaint();
 
