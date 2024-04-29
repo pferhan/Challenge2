@@ -1,4 +1,4 @@
-# Project
+# GitWizard
 
 ## What is this?
 This project streamlines the connection between GitHub and user projects. It allows users without experience in git to easily operate, create, and reference repositories. The App.java class creates a GUI that completes git tasks.

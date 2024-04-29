@@ -271,6 +271,16 @@ public class App extends JFrame{
                     } catch (IOException er) {
                          System.err.println("Error writing to file: " + er.getMessage());
                     }
+
+                    try {
+                        FileWriter writer = new FileWriter("README.md");
+                         writer.write("#" + name);
+                         writer.close();
+                         System.out.println("File written successfully.");
+                     } catch (IOException er) {
+                          System.err.println("Error writing to file: " + er.getMessage());
+                     }
+                     
                     push = gitSubprocessClient.gitPush("master");
 
                 }
