@@ -141,7 +141,7 @@ public class App extends JFrame{
         });
             
             
-            JButton createButton = new JButton("create");
+            JButton createButton = new JButton("Create");
             createButton.setBounds(370, 500, 100, 30);
             mainPanel.add(createButton);
             createButton.addActionListener(new ActionListener() {
@@ -152,7 +152,7 @@ public class App extends JFrame{
                     System.out.println(gitAddAll);
 
                     //Git commit
-                    String commit = gitSubprocessClient.gitCommit("Initial Commit");
+                    String commit = gitSubprocessClient.gitCommit("initial commit");
                     System.out.println(commit);
 
                     name = nameTF.getText();
@@ -172,7 +172,7 @@ public class App extends JFrame{
                     //Git push
                     String push = gitSubprocessClient.gitPush("master");
 
-                    //write gitignor file
+                    //write gitignore file
                      try {
                        FileWriter writer = new FileWriter(".gitignore");
                         writer.write("##############################\n" + //
@@ -271,12 +271,23 @@ public class App extends JFrame{
                     } catch (IOException er) {
                          System.err.println("Error writing to file: " + er.getMessage());
                     }
-                    push = gitSubprocessClient.gitPush("master");
 
+                    //write README
+                    try {
+                        FileWriter writer = new FileWriter("README.md");
+                        writer.write("#" + name);
+                        writer.close();
+                        System.out.println("File written successfully.");
+                     } catch (IOException er) {
+                        System.err.println("Error writing to file: " + er.getMessage());
+                     }
+
+                    push = gitSubprocessClient.gitPush("master");
                 }
             });
 
             String gitAddFile = gitSubprocessClient.gitAddFile(".gitignore");
+            String gitAddFile2 = gitSubprocessClient.gitAddFile("README.md");
 
             repaint();
 
