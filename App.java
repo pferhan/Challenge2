@@ -130,15 +130,15 @@ public class App extends JFrame{
             privacyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (privacyButton.isSelected()) {
-                    privacyButton.setText("Public");
-                    isPrivate = false;
-                } else {
-                    privacyButton.setText("Private");
-                    isPrivate = true;
+                    if (privacyButton.isSelected()) {
+                        privacyButton.setText("Public");
+                        isPrivate = false;
+                    } else {
+                        privacyButton.setText("Private");
+                        isPrivate = true;
+                    }
                 }
-            }
-        });
+            });
             
             
             JButton createButton = new JButton("Create");
@@ -284,10 +284,12 @@ public class App extends JFrame{
 
                     push = gitSubprocessClient.gitPush("master");
                 }
-            });
+                });
 
-            String gitAddFile = gitSubprocessClient.gitAddFile(".gitignore");
-            String gitAddFile2 = gitSubprocessClient.gitAddFile("README.md");
+            if (gitSubprocessClient != null) {
+                String gitAddFile = gitSubprocessClient.gitAddFile(".gitignore");
+                String gitAddFile2 = gitSubprocessClient.gitAddFile("README.md");
+            }
 
             repaint();
 
